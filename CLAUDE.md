@@ -23,6 +23,9 @@ This is a **Kotlin Multiplatform** project named **M104SharedLogic** that focuse
 - `foundation/src/commonMain/kotlin/com/m104atsp/foundation/BusinessLogic.kt`: Main business logic class
 - `foundation/src/commonMain/kotlin/com/m104atsp/foundation/Platform.kt`: Platform abstraction interface
 - Platform-specific implementations in `Platform.android.kt` and `Platform.ios.kt`
+- `foundation/src/commonMain/kotlin/com/m104atsp/foundation/conmunication/date/`: Date validation business logic
+  - `DateRuleChecker.kt`: Interview date validation with business rules
+  - `InterviewDateError.kt`: Error states enum for date validation
 
 ### Design Philosophy
 - **Business Logic Only**: No UI components, frameworks, or presentation layer code
@@ -45,28 +48,51 @@ This is a **Kotlin Multiplatform** project named **M104SharedLogic** that focuse
 ./gradlew :foundation:linkDebugFrameworkIosArm64
 ./gradlew :foundation:linkReleaseFrameworkIosArm64
 
+# Build iOS framework for simulator
+./gradlew :foundation:linkDebugFrameworkIosSimulatorArm64
+./gradlew :foundation:linkReleaseFrameworkIosSimulatorArm64
+
 # Clean build
 ./gradlew clean
+
+# Build entire project
+./gradlew build
+```
+
+### Quality & Verification
+```bash
+# Run lint analysis
+./gradlew lint
+./gradlew :foundation:lintDebug
+
+# Run all verification tasks
+./gradlew check
 ```
 
 ### Testing
 ```bash
-# Run common tests
-./gradlew :foundation:testDebugUnitTest
-
 # Run all tests across platforms
 ./gradlew test
+./gradlew :foundation:allTests
 
-# Test specific platforms
+# Run Android unit tests
+./gradlew :foundation:testDebugUnitTest
+./gradlew :foundation:testReleaseUnitTest
+
+# Run iOS tests
 ./gradlew :foundation:iosSimulatorArm64Test
 ./gradlew :foundation:iosArm64Test
+
+# Run verification tasks (includes testing)
+./gradlew check
 ```
 
 ### Development Setup
-- **Kotlin**: 2.2.10
+- **Kotlin**: 2.0.0
 - **Android Gradle Plugin**: 8.10.1  
-- **JVM Target**: Java 11
-- **Platforms**: Android (minSdk 24) and iOS (arm64 + simulator)
+- **JVM Target**: Java 17
+- **Platforms**: Android (minSdk 24, targetSdk 36) and iOS (arm64 + simulator)
+- **Key Dependencies**: kotlinx-datetime (0.6.1) for cross-platform date/time handling
 
 ## Integration Guide
 
@@ -95,9 +121,31 @@ The foundation module builds to a static iOS framework named "M104Foundation":
 - Provide `actual` implementations in `androidMain`/`iosMain`
 - Follow existing pattern established by `Platform.kt`
 
+### Existing Business Logic Components
+
+#### Date Validation System
+- **`DateRuleChecker`**: Comprehensive interview date validation
+  - Empty list validation (required field check)
+  - Expiration validation against system time using kotlinx-datetime
+  - Duplicate detection with minute-level precision
+  - Prioritized error handling (required → expired → duplicate)
+- **`InterviewDateError`**: Error states enum (`NONE`, `MUST`, `DATE_EXPIRED`, `INTERVIEW_DATE_REPEAT`)
+
 ### Example Business Logic Areas
-- Data validation and transformation
+- Date/time validation and business rules
+- Cross-platform data processing algorithms
 - Business rule enforcement
-- Algorithm implementations
 - API data models and parsing
-- Utility functions and extensions
+- Platform-agnostic utility functions
+
+### Development Notes
+
+#### Time Handling
+- Use `kotlinx-datetime` for all date/time operations
+- Get system time with `Clock.System.now().toEpochMilliseconds()`
+- Supports cross-platform time operations without platform-specific code
+
+#### Project Structure
+- Version management via `gradle/libs.versions.toml` (version catalog)
+- Framework naming: iOS framework is named "M104Foundation"
+- Package structure follows `com.m104atsp.foundation` namespace
