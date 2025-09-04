@@ -27,6 +27,7 @@ kotlin {
         commonMain.dependencies {
             // Add common multiplatform dependencies here
             // For example: kotlinx-coroutines, kotlinx-serialization, etc.
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
