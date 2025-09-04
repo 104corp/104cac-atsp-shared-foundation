@@ -27,7 +27,6 @@ M104SharedLogic/
 │   ├── src/
 │   │   ├── commonMain/kotlin/           # 共享業務邏輯
 │   │   │   └── com/m104atsp/foundation/
-│   │   │       ├── BusinessLogic.kt     # 主要業務邏輯入口
 │   │   │       ├── Platform.kt          # 平台抽象接口
 │   │   │       └── conmunication/date/  # 日期驗證系統
 │   │   ├── androidMain/kotlin/          # Android 特定實現
@@ -68,7 +67,7 @@ dependencies {
 3. 在 Swift 中使用：
    ```swift
    import M104Foundation
-   let businessLogic = BusinessLogic()
+   let platform = GetPlatformKt.getPlatform()
    ```
 
 ## 🛠️ 開發命令
@@ -116,11 +115,10 @@ errors.forEach { error ->
 ### 平台資訊
 
 ```kotlin
-import com.m104atsp.foundation.BusinessLogic
 import com.m104atsp.foundation.getPlatform
 
-val businessLogic = BusinessLogic()
-val platformInfo = businessLogic.getPlatformInfo()
+val platform = getPlatform()
+val platformInfo = "Running on ${platform.name} ${platform.version}"
 // 輸出: "Running on Android 34" 或 "Running on iOS 17.0"
 ```
 

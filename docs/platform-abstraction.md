@@ -82,7 +82,7 @@ fun showPlatformInfo() {
 ### 在業務邏輯中使用
 
 ```kotlin
-class BusinessLogic {
+class PlatformService {
     private val platform = getPlatform()
     
     fun getPlatformInfo(): String {
@@ -228,7 +228,7 @@ class TestPlatform(
 ) : Platform
 
 // 在測試中使用
-fun createTestBusinessLogic(): BusinessLogic {
+fun createTestPlatformService(): PlatformService {
     // 可以注入測試平台...
 }
 ```
@@ -339,5 +339,5 @@ class AppConfig {
 
 ## 相關文檔
 
-- **[BusinessLogic 業務邏輯](./business-logic.md)** - 了解如何在業務邏輯中使用 Platform
+- **[CLAUDE.md](../CLAUDE.md)** - 了解專案整體架構和開發指引
 - **[日期驗證系統](./date-validation-system.md)** - 查看實際的跨平台業務邏輯示例

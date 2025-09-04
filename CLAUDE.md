@@ -20,7 +20,6 @@ This is a **Kotlin Multiplatform** project named **M104SharedLogic** that focuse
   - `src/commonTest/kotlin/`: Shared unit tests
 
 ### Key Files
-- `foundation/src/commonMain/kotlin/com/m104atsp/foundation/BusinessLogic.kt`: Main business logic class
 - `foundation/src/commonMain/kotlin/com/m104atsp/foundation/Platform.kt`: Platform abstraction interface
 - Platform-specific implementations in `Platform.android.kt` and `Platform.ios.kt`
 - `foundation/src/commonMain/kotlin/com/m104atsp/foundation/conmunication/date/`: Date validation business logic

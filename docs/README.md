@@ -6,7 +6,6 @@
 
 ### 核心業務組件
 - **[Platform 平台抽象](./platform-abstraction.md)** - 跨平台抽象接口設計
-- **[BusinessLogic 業務邏輯](./business-logic.md)** - 主要業務邏輯入口
 - **[日期驗證系統](./date-validation-system.md)** - 面試時間驗證完整指南
 
 ### 快速導航
@@ -15,14 +14,13 @@
 
 **需要驗證日期？** 查看 [日期驗證系統](./date-validation-system.md)
 
-**想了解整體架構？** 參考 [BusinessLogic 業務邏輯](./business-logic.md)
+**想了解整體架構？** 參考專案根目錄的 [CLAUDE.md](../CLAUDE.md)
 
 ## 🏗️ commonMain 模組結構
 
 ```
 foundation/src/commonMain/kotlin/com/m104atsp/foundation/
 ├── Platform.kt                    # 平台抽象接口
-├── BusinessLogic.kt               # 主業務邏輯類
 └── conmunication/date/            # 日期相關業務邏輯
     ├── DateRuleChecker.kt         # 日期驗證核心邏輯
     └── InterviewDateError.kt      # 驗證錯誤類型枚舉

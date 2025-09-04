@@ -693,5 +693,5 @@ A: 是的，DateRuleChecker 是無狀態的單例對象，可以安全地在多�
 ## 相關文檔
 
 - **[Platform 平台抽象](./platform-abstraction.md)** - 了解跨平台抽象機制
-- **[BusinessLogic 業務邏輯](./business-logic.md)** - 查看如何整合日期驗證到業務邏輯中
+- **[CLAUDE.md](../CLAUDE.md)** - 查看專案整體架構和開發指引
 - **[DateRuleChecker.md](../foundation/src/commonMain/kotlin/com/m104atsp/foundation/conmunication/date/DateRuleChecker.md)** - 原始詳細文檔
