@@ -1,4 +1,5 @@
 package com.m104atsp.foundation.conmunication.date
+
 import kotlinx.datetime.*
 
 object DateRuleChecker {
@@ -15,7 +16,7 @@ object DateRuleChecker {
      * - 重複時間: 標記為重複錯誤 (會覆蓋過期錯誤)
      * - 重複比較精確到分鐘，忽略秒和毫秒
      */
-    private fun checkDates(list: MutableList<Long>): MutableList<InterviewDateError> {
+    fun checkDates(list: MutableList<Long>): MutableList<InterviewDateError> {
         // 空清單檢查
         if (list.isEmpty()) return mutableListOf(InterviewDateError.MUST)
 
