@@ -1,261 +1,168 @@
 # M104SharedLogic
 
-> Kotlin Multiplatform shared business logic library for cross-platform mobile applications
+> Kotlin Multiplatform 跨平台業務邏輯共享庫
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-blue.svg)](https://kotlinlang.org)
 [![KMP](https://img.shields.io/badge/Kotlin-Multiplatform-orange.svg)](https://kotlinlang.org/docs/multiplatform.html)
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://developer.android.com/)
 [![iOS](https://img.shields.io/badge/Platform-iOS-lightgrey.svg)](https://developer.apple.com/ios/)
 
-## 🚀 Project Overview
+## 🚀 專案概述
 
-**M104SharedLogic** is a Kotlin Multiplatform library focused exclusively on **shared business logic** between iOS and Android platforms. This library contains no UI framework dependencies and serves as a foundation for cross-platform business logic implementation.
+**M104SharedLogic** 是一個專注於 **純業務邏輯** 的 Kotlin Multiplatform 庫，為 iOS 和 Android 平台提供共享的業務邏輯功能。本庫不包含任何 UI 框架依賴，專門作為跨平台業務邏輯的基礎庫。
 
-### Key Features
+### 主要特色
 
-- ✅ **Pure Business Logic**: No UI dependencies, frameworks, or presentation layer code
-- ✅ **Cross-Platform**: Shared algorithms, data processing, and business rules
-- ✅ **Platform Abstractions**: Clean expect/actual pattern implementation
-- ✅ **Date/Time Validation**: Comprehensive interview scheduling validation system
-- ✅ **Type-Safe**: Full Kotlin type safety across all platforms
-- ✅ **Testable**: Comprehensive unit testing coverage
+- ✅ **純業務邏輯**：無 UI 依賴，專注業務規則實現
+- ✅ **跨平台支持**：Android (API 24+) 和 iOS (arm64 + Simulator)  
+- ✅ **日期驗證系統**：完整的面試時間驗證功能
+- ✅ **平台抽象**：使用 expect/actual 模式處理平台差異
+- ✅ **類型安全**：完整的 Kotlin 類型安全保障
 
-## 🏗️ Architecture
+## 🏗️ 專案結構
 
 ```
 M104SharedLogic/
-├── foundation/                          # Core multiplatform module
+├── foundation/                          # 核心多平台模組
 │   ├── src/
-│   │   ├── commonMain/kotlin/           # Shared business logic
+│   │   ├── commonMain/kotlin/           # 共享業務邏輯
 │   │   │   └── com/m104atsp/foundation/
-│   │   │       ├── BusinessLogic.kt     # Main business logic entry point
-│   │   │       ├── Platform.kt          # Platform abstraction interface
-│   │   │       └── conmunication/date/  # Date validation system
-│   │   │           ├── DateRuleChecker.kt
-│   │   │           └── InterviewDateError.kt
-│   │   ├── androidMain/kotlin/          # Android-specific implementations
-│   │   ├── iosMain/kotlin/              # iOS-specific implementations
-│   │   └── commonTest/kotlin/           # Shared unit tests
-│   └── build.gradle.kts                 # Module configuration
-├── gradle/libs.versions.toml            # Version catalog
-└── CLAUDE.md                           # Development guide
+│   │   │       ├── BusinessLogic.kt     # 主要業務邏輯入口
+│   │   │       ├── Platform.kt          # 平台抽象接口
+│   │   │       └── conmunication/date/  # 日期驗證系統
+│   │   ├── androidMain/kotlin/          # Android 特定實現
+│   │   ├── iosMain/kotlin/              # iOS 特定實現
+│   │   └── commonTest/kotlin/           # 共享單元測試
+├── docs/                               # 中文文檔
+└── CLAUDE.md                          # 開發指引
 ```
 
-## 🔧 Technical Stack
+## 🔧 技術規格
 
-- **Language**: Kotlin 2.0.0
-- **Platforms**: Android (API 24+) • iOS (arm64 + Simulator)
-- **Build System**: Gradle 8.14.3
-- **JVM Target**: Java 17
-- **Dependencies**:
-  - `kotlinx-datetime 0.6.1` - Cross-platform date/time handling
+- **語言**：Kotlin 2.0.0
+- **平台**：Android (API 24+)、iOS (arm64 + Simulator)
+- **JVM 目標**：Java 17
+- **主要依賴**：kotlinx-datetime 0.6.1
 
-## 📦 Installation
+## 📦 安裝使用
 
-### Android Integration
-
-Add the library to your Android project:
+### Android 整合
 
 ```kotlin
 dependencies {
     implementation project(':foundation')
-    // or published artifact:
+    // 或發佈版本：
     implementation 'com.m104atsp:foundation:1.0.0'
 }
 ```
 
-### iOS Integration
+### iOS 整合
 
-The library compiles to a static framework named **M104Foundation**:
-
-1. Build the iOS framework:
+1. 建構 iOS Framework：
    ```bash
    ./gradlew :foundation:linkReleaseFrameworkIosArm64
    ```
 
-2. Add the generated framework to your Xcode project
-3. Import in Swift/Objective-C:
+2. 在 Xcode 專案中添加生成的 **M104Foundation** framework
+
+3. 在 Swift 中使用：
    ```swift
    import M104Foundation
+   let businessLogic = BusinessLogic()
    ```
 
-## 🛠️ Development
-
-### Prerequisites
-
-- Kotlin 2.0.0+
-- Android Studio or IntelliJ IDEA
-- Xcode (for iOS development)
-- JDK 17+
-
-### Build Commands
+## 🛠️ 開發命令
 
 ```bash
-# Build entire project
+# 建構專案
 ./gradlew build
 
-# Build foundation library
-./gradlew :foundation:build
+# 執行測試
+./gradlew test
 
-# Android library (AAR)
-./gradlew :foundation:assembleDebug
+# 建構 Android 庫
 ./gradlew :foundation:assembleRelease
 
-# iOS framework
-./gradlew :foundation:linkDebugFrameworkIosArm64
+# 建構 iOS Framework
 ./gradlew :foundation:linkReleaseFrameworkIosArm64
-./gradlew :foundation:linkDebugFrameworkIosSimulatorArm64
 
-# Clean build
+# 清理建構
 ./gradlew clean
 ```
 
-### Testing
+## 💼 核心功能
 
-```bash
-# Run all tests
-./gradlew test
-
-# Android tests
-./gradlew :foundation:testDebugUnitTest
-
-# iOS tests
-./gradlew :foundation:iosSimulatorArm64Test
-
-# Verification (includes linting)
-./gradlew check
-```
-
-## 💼 Business Logic Components
-
-### Date Validation System
-
-The library includes a comprehensive date validation system for interview scheduling:
+### 日期驗證系統
 
 ```kotlin
 import com.m104atsp.foundation.conmunication.date.DateRuleChecker
 import com.m104atsp.foundation.conmunication.date.InterviewDateError
 
-// Validate interview dates
+// 驗證面試時間
 val timestamps = mutableListOf(1703123456789L, 1703123400000L)
 val errors = DateRuleChecker.checkDates(timestamps)
 
-// Handle validation results
+// 處理驗證結果
 errors.forEach { error ->
     when (error) {
-        InterviewDateError.NONE -> // Valid date
-        InterviewDateError.MUST -> // Required field error
-        InterviewDateError.DATE_EXPIRED -> // Past date error
-        InterviewDateError.INTERVIEW_DATE_REPEAT -> // Duplicate date error
+        InterviewDateError.NONE -> // 有效時間
+        InterviewDateError.MUST -> // 必填錯誤
+        InterviewDateError.DATE_EXPIRED -> // 過期錯誤  
+        InterviewDateError.INTERVIEW_DATE_REPEAT -> // 重複錯誤
     }
 }
 ```
 
-#### Validation Rules
-
-1. **Required Field**: Empty lists return `MUST` error
-2. **Expiration Check**: Dates before current system time are `DATE_EXPIRED`
-3. **Duplicate Detection**: Minute-level precision duplicate checking
-4. **Priority**: Required → Expired → Duplicate
-
-### Platform Abstraction
-
-Use expect/actual pattern for platform-specific functionality:
-
-```kotlin
-// commonMain - Platform.kt
-expect fun getPlatform(): Platform
-
-// androidMain - Platform.android.kt
-actual fun getPlatform(): Platform = AndroidPlatform()
-
-// iosMain - Platform.ios.kt  
-actual fun getPlatform(): Platform = IOSPlatform()
-```
-
-## 📖 Documentation
-
-- **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code
-- **[DateRuleChecker.md](./foundation/src/commonMain/kotlin/com/m104atsp/foundation/conmunication/date/DateRuleChecker.md)** - Date validation system documentation
-- **[docs/](./docs/)** - Additional documentation wiki
-
-## 🧪 Testing Strategy
-
-- **Common Tests**: Shared business logic validation in `commonTest/`
-- **Platform Tests**: Platform-specific implementation testing
-- **Integration Tests**: Cross-platform functionality validation
-- **Coverage**: Focus on business logic and validation rules
-
-## 🚀 Usage Examples
-
-### Basic Business Logic
+### 平台資訊
 
 ```kotlin
 import com.m104atsp.foundation.BusinessLogic
 import com.m104atsp.foundation.getPlatform
 
-// Initialize business logic
 val businessLogic = BusinessLogic()
-val greeting = businessLogic.greet()
-
-// Get platform information
-val platform = getPlatform()
-println("Running on: ${platform.name}")
+val platformInfo = businessLogic.getPlatformInfo()
+// 輸出: "Running on Android 34" 或 "Running on iOS 17.0"
 ```
 
-### Cross-Platform Date Handling
+## 📖 文檔
 
-```kotlin
-import kotlinx.datetime.*
+- **[中文文檔庫](./docs/README.md)** - 完整的中文使用指南
+- **[CLAUDE.md](./CLAUDE.md)** - Claude Code 開發指引
+- **[日期驗證詳細文檔](./foundation/src/commonMain/kotlin/com/m104atsp/foundation/conmunication/date/DateRuleChecker.md)**
 
-// Get current system time (works on all platforms)
-val now = Clock.System.now()
-val timestamp = now.toEpochMilliseconds()
+## 🧪 測試
 
-// Local date/time
-val localDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
-val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+```bash
+# 執行所有測試
+./gradlew test
+
+# Android 測試
+./gradlew :foundation:testDebugUnitTest
+
+# iOS 測試  
+./gradlew :foundation:iosSimulatorArm64Test
 ```
 
-## 🤝 Contributing
+## 📋 專案狀態
 
-1. **Follow Architecture**: Business logic only, no UI dependencies
-2. **Use expect/actual**: For platform-specific implementations
-3. **Write Tests**: Include comprehensive test coverage
-4. **Documentation**: Update relevant documentation files
+- ✅ **基礎模組**：核心業務邏輯基礎架構
+- ✅ **日期驗證**：面試排程驗證系統
+- ✅ **平台抽象**：Android 和 iOS 實現
+- ✅ **測試覆蓋**：業務邏輯單元測試
+- 🔄 **進行中**：額外業務邏輯組件
 
-### Development Patterns
+## 🤝 貢獻指引
 
-```kotlin
-// ✅ Good: Pure business logic
-class DataProcessor {
-    fun processData(input: String): ProcessedData {
-        // Business logic here
-    }
-}
+1. **遵循架構**：僅業務邏輯，無 UI 依賴
+2. **使用 expect/actual**：平台特定實現
+3. **撰寫測試**：包含完整測試覆蓋
+4. **更新文檔**：維護相關文檔檔案
 
-// ❌ Bad: UI dependencies
-class DataProcessor(private val context: Context) { // Android-specific
-    // Don't do this in commonMain
-}
-```
+## 📄 授權
 
-## 📋 Project Status
+本專案採用 MIT 授權條款
 
-- ✅ **Foundation Module**: Core business logic infrastructure
-- ✅ **Date Validation**: Interview scheduling validation system  
-- ✅ **Platform Abstractions**: Android and iOS implementations
-- ✅ **Testing**: Unit test coverage for business logic
-- 🔄 **In Progress**: Additional business logic components
-- 📋 **Planned**: API data models and parsing utilities
+## 🔗 相關連結
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🔗 Links
-
-- [Kotlin Multiplatform Documentation](https://kotlinlang.org/docs/multiplatform.html)
-- [kotlinx-datetime Documentation](https://github.com/Kotlin/kotlinx-datetime)
-- [Android Integration Guide](https://developer.android.com/kotlin/multiplatform)
-- [iOS Integration Guide](https://kotlinlang.org/docs/multiplatform-mobile-integrate-in-existing-app.html)
+- [Kotlin Multiplatform 文檔](https://kotlinlang.org/docs/multiplatform.html)
+- [kotlinx-datetime 文檔](https://github.com/Kotlin/kotlinx-datetime)
