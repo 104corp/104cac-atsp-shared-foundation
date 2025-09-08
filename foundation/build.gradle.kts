@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -13,6 +14,8 @@ kotlin {
         }
     }
     
+    val xcf = XCFramework("M104Foundation")
+    
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -20,6 +23,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "M104Foundation"
             isStatic = true
+            xcf.add(this)
         }
     }
     

@@ -79,15 +79,34 @@ dependencies {
 # 執行測試
 ./gradlew test
 
-# 建構 Android 庫
-./gradlew :foundation:assembleRelease
+# 建構 Android AAR 庫
+./gradlew :foundation:assembleDebug        # Debug AAR
+./gradlew :foundation:assembleRelease      # Release AAR
 
 # 建構 iOS Framework
-./gradlew :foundation:linkReleaseFrameworkIosArm64
+./gradlew :foundation:linkDebugFrameworkIosArm64      # Debug Framework
+./gradlew :foundation:linkReleaseFrameworkIosArm64    # Release Framework
+
+# 建構 XCFramework（推薦用於 iOS 整合）
+./gradlew :foundation:assembleM104FoundationXCFramework
 
 # 清理建構
 ./gradlew clean
 ```
+
+### 📁 輸出路徑
+
+**Android AAR 庫：**
+- Debug: `foundation/build/outputs/aar/foundation-debug.aar`
+- Release: `foundation/build/outputs/aar/foundation-release.aar`
+
+**iOS Framework：**
+- Debug: `foundation/build/bin/iosArm64/debugFramework/M104Foundation.framework`
+- Release: `foundation/build/bin/iosArm64/releaseFramework/M104Foundation.framework`
+
+**XCFramework（包含真機和模擬器）：**
+- Debug: `foundation/build/XCFrameworks/debug/M104Foundation.xcframework`
+- Release: `foundation/build/XCFrameworks/release/M104Foundation.xcframework`
 
 ## 💼 核心功能
 
