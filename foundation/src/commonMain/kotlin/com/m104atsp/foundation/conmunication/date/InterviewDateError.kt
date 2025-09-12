@@ -1,5 +1,8 @@
 package com.m104atsp.foundation.conmunication.date
 
+import kotlin.native.ObjCName
+import kotlin.experimental.ExperimentalObjCName
+
 /**
  * 面試時間驗證錯誤類型枚舉
  * 
@@ -12,6 +15,8 @@ package com.m104atsp.foundation.conmunication.date
  * @author M104SharedLogic Team
  * @see InterviewDateRuleChecker
  */
+@OptIn(ExperimentalObjCName::class)
+@ObjCName("InterviewDateError")
 enum class InterviewDateError {
     
     /**
@@ -21,6 +26,7 @@ enum class InterviewDateError {
      * 
      * @since 1.0.0
      */
+    @ObjCName("none")
     NONE,
     
     /**
@@ -35,6 +41,7 @@ enum class InterviewDateError {
      * 
      * @since 1.0.0
      */
+    @ObjCName("must")
     MUST,
     
     /**
@@ -51,6 +58,7 @@ enum class InterviewDateError {
      * 
      * @since 1.0.0
      */
+    @ObjCName("dateExpired")
     DATE_EXPIRED,
     
     /**
@@ -68,6 +76,7 @@ enum class InterviewDateError {
      * 
      * @since 1.0.0
      */
+    @ObjCName("interviewDateRepeat")
     INTERVIEW_DATE_REPEAT,
     
     /**
@@ -86,5 +95,6 @@ enum class InterviewDateError {
      * @since 1.0.0
      * @see InterviewDateRuleChecker.checkCollaborativeInterviewDatesWithErrors
      */
+    @ObjCName("outOfRange")
     OUT_OF_RANGE;
 }

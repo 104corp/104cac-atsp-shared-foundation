@@ -200,11 +200,21 @@ val errors = InterviewDateRuleChecker.checkCollaborativeInterviewDatesWithErrors
 
 ## 外部 API 設計
 
-`InterviewDateRuleChecker` 提供完整的驗證 API，適合直接用於外部 AAR 包：
-- 詳細的 KDoc 註解，編譯後仍可提供完整的 IDE 提示
-- 類型安全的錯誤狀態回傳
-- 完善的錯誤描述和業務場景說明
-- 便於 Java 互操作的方法設計
+本項目提供兩層 API 設計：
+
+### 1. 核心驗證器 - InterviewDateRuleChecker
+- 低層級的驗證邏輯實現
+- 直接的驗證方法，返回錯誤列表
+- 適合需要細粒度控制的場景
+
+### 2. 統一驗證器 - InterviewDateValidator  
+- 高層級的統一 API，同時支援 Android AAR 和 iOS XCFramework
+- 封裝的驗證結果類型 (`InterviewDateValidationResult`)
+- 豐富的便利方法和工具函數
+- 完整的 @ObjCName 註解確保良好的 Swift 體驗
+- 詳細的 KDoc 註解支援 Android AAR 的 IDE 提示
+
+**建議**：優先使用 `InterviewDateValidator` 作為外部 API，它提供更完整和友好的開發體驗。
 
 ## 依賴
 

@@ -24,6 +24,15 @@ kotlin {
             baseName = "M104Foundation"
             isStatic = true
             xcf.add(this)
+            
+            // 設置 Swift 互操作優化
+            export(libs.kotlinx.datetime)
+            
+            // 添加編譯選項以優化 Swift 互操作
+            freeCompilerArgs += listOf(
+                "-Xexport-kdoc",
+                "-Xbinary=bundleId=com.m104atsp.foundation"
+            )
         }
     }
     
@@ -31,7 +40,7 @@ kotlin {
         commonMain.dependencies {
             // Add common multiplatform dependencies here
             // For example: kotlinx-coroutines, kotlinx-serialization, etc.
-            implementation(libs.kotlinx.datetime)
+            api(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

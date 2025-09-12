@@ -1,6 +1,8 @@
 package com.m104atsp.foundation.conmunication.date
 
 import kotlinx.datetime.*
+import kotlin.native.ObjCName
+import kotlin.experimental.ExperimentalObjCName
 
 /**
  * 面試時間驗證器
@@ -11,6 +13,8 @@ import kotlinx.datetime.*
  * @since 1.0.0
  * @author M104SharedLogic Team
  */
+@OptIn(ExperimentalObjCName::class)
+@ObjCName("InterviewDateRuleChecker")
 object InterviewDateRuleChecker {
 
     /**
@@ -24,8 +28,9 @@ object InterviewDateRuleChecker {
      * @see checkCollaborativeInterviewDatesWithErrors
      * @since 1.0.0
      */
+    @ObjCName("checkCollaborativeInterviewDatesPass")
     fun checkCollaborativeInterviewDatesPass(
-        timestampList: MutableList<Long>, 
+        timestampList: List<Long>, 
         availableTimeList: List<Pair<Long, Long>>, 
         duration: Long
     ): Boolean {
@@ -49,17 +54,18 @@ object InterviewDateRuleChecker {
      * @see InterviewDateError
      * @since 1.0.0
      */
+    @ObjCName("checkCollaborativeInterviewDatesWithErrors")
     fun checkCollaborativeInterviewDatesWithErrors(
-        timestampList: MutableList<Long>, 
+        timestampList: List<Long>, 
         availableTimeList: List<Pair<Long, Long>>, 
         duration: Long
-    ): MutableList<InterviewDateError> {
+    ): List<InterviewDateError> {
         // 負數持續時間自動校正為零
         val safeDuration = if (duration < 0) 0L else duration
         
         // 空清單檢查
         if (timestampList.isEmpty()) {
-            return mutableListOf(InterviewDateError.MUST)
+            return listOf(InterviewDateError.MUST)
         }
 
         val currentTime = Clock.System.now().toEpochMilliseconds()
@@ -84,7 +90,7 @@ object InterviewDateRuleChecker {
                 // 所有檢查都通過
                 else -> InterviewDateError.NONE
             }
-        }.toMutableList()
+        }
     }
 
     /**
@@ -96,7 +102,7 @@ object InterviewDateRuleChecker {
      * @see checkInterviewDatesWithErrors
      * @since 1.0.0
      */
-    fun checkInterviewDatesPass(timestampList: MutableList<Long>): Boolean {
+    fun checkInterviewDatesPass(timestampList: List<Long>): Boolean {
         val errorList = checkInterviewDatesWithErrors(timestampList)
         return errorList.all { it == InterviewDateError.NONE }
     }
@@ -109,16 +115,17 @@ object InterviewDateRuleChecker {
      * 2. 過期檢查：與當前系統時間比較
      * 3. 重複檢查：精確到分鐘級別的重複檢測
      *
-     * @param timestampList 面試時間戳清單（毫秒），可修改的清單
+     * @param timestampList 面試時間戳清單（毫秒）
      * @return 對應每個時間戳的錯誤狀態清單，與輸入清單索引一一對應
      * 
      * @see InterviewDateError
      * @since 1.0.0
      */
-    fun checkInterviewDatesWithErrors(timestampList: MutableList<Long>): MutableList<InterviewDateError> {
+    @ObjCName("checkInterviewDatesWithErrors")
+    fun checkInterviewDatesWithErrors(timestampList: List<Long>): List<InterviewDateError> {
         // 空清單檢查
         if (timestampList.isEmpty()) {
-            return mutableListOf(InterviewDateError.MUST)
+            return listOf(InterviewDateError.MUST)
         }
 
         val currentTime = Clock.System.now().toEpochMilliseconds()
@@ -137,7 +144,7 @@ object InterviewDateRuleChecker {
                 // 所有檢查都通過
                 else -> InterviewDateError.NONE
             }
-        }.toMutableList()
+        }
     }
 
     // ==================== 私有輔助方法 ====================
