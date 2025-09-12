@@ -1,8 +1,6 @@
 package com.m104atsp.foundation.conmunication.date
 
 import kotlinx.datetime.*
-import kotlin.native.ObjCName
-import kotlin.experimental.ExperimentalObjCName
 
 /**
  * 面試時間驗證器
@@ -13,8 +11,6 @@ import kotlin.experimental.ExperimentalObjCName
  * @since 1.0.0
  * @author M104SharedLogic Team
  */
-@OptIn(ExperimentalObjCName::class)
-@ObjCName("InterviewDateRuleChecker")
 object InterviewDateRuleChecker {
 
     /**
@@ -28,10 +24,9 @@ object InterviewDateRuleChecker {
      * @see checkCollaborativeInterviewDatesWithErrors
      * @since 1.0.0
      */
-    @ObjCName("checkCollaborativeInterviewDatesPass")
     fun checkCollaborativeInterviewDatesPass(
         timestampList: List<Long>, 
-        availableTimeList: List<Pair<Long, Long>>, 
+        availableTimeList: List<AvailableTimeSlot>,
         duration: Long
     ): Boolean {
         val errorList = checkCollaborativeInterviewDatesWithErrors(timestampList, availableTimeList, duration)
@@ -48,16 +43,15 @@ object InterviewDateRuleChecker {
      * 4. 範圍檢查：確保面試時間完全落在可用時段內
      *
      * @param timestampList 面試時間戳清單（毫秒），可修改的清單
-     * @param availableTimeList 可用時段清單，格式為 Pair(開始時間, 結束時間)，單位毫秒
+     * @param availableTimeList 可用時段清單，使用 AvailableTimeSlot 物件表示時段
      * @param duration 面試持續時間（毫秒），負數會自動校正為0
      * @return 對應每個時間戳的錯誤狀態清單，與輸入清單索引一一對應
      * @see InterviewDateError
      * @since 1.0.0
      */
-    @ObjCName("checkCollaborativeInterviewDatesWithErrors")
     fun checkCollaborativeInterviewDatesWithErrors(
         timestampList: List<Long>, 
-        availableTimeList: List<Pair<Long, Long>>, 
+        availableTimeList: List<AvailableTimeSlot>,
         duration: Long
     ): List<InterviewDateError> {
         // 負數持續時間自動校正為零
@@ -121,7 +115,6 @@ object InterviewDateRuleChecker {
      * @see InterviewDateError
      * @since 1.0.0
      */
-    @ObjCName("checkInterviewDatesWithErrors")
     fun checkInterviewDatesWithErrors(timestampList: List<Long>): List<InterviewDateError> {
         // 空清單檢查
         if (timestampList.isEmpty()) {
@@ -160,10 +153,10 @@ object InterviewDateRuleChecker {
     private fun isTimeWithinAvailableSlots(
         startTime: Long, 
         endTime: Long, 
-        availableTimeList: List<Pair<Long, Long>>
+        availableTimeList: List<AvailableTimeSlot>
     ): Boolean {
         return availableTimeList.any { slot ->
-            startTime >= slot.first && endTime <= slot.second
+            slot.containsRange(startTime, endTime)
         }
     }
 

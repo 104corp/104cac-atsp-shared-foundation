@@ -46,8 +46,9 @@ dependencies {
 
 3. Import in your Kotlin/Java files:
 ```kotlin
-import com.m104atsp.foundation.conmunication.date.InterviewDateValidator
+import com.m104atsp.foundation.conmunication.date.InterviewDateRuleChecker
 import com.m104atsp.foundation.conmunication.date.InterviewDateError
+import com.m104atsp.foundation.conmunication.date.AvailableTimeSlot
 ```
 
 ### iOS Project Integration
@@ -63,7 +64,7 @@ import com.m104atsp.foundation.conmunication.date.InterviewDateError
 #### Basic Interview Date Validation
 
 ```kotlin
-import com.m104atsp.foundation.conmunication.date.InterviewDateValidator
+import com.m104atsp.foundation.conmunication.date.InterviewDateRuleChecker
 import com.m104atsp.foundation.conmunication.date.InterviewDateError
 
 // Create timestamp list (in milliseconds)
@@ -74,31 +75,17 @@ val timestamps = listOf(
 )
 
 // Method 1: Simple validation (returns Boolean)
-val isValid = InterviewDateValidator.isBasicInterviewDatesValid(timestamps)
+val isValid = InterviewDateRuleChecker.checkInterviewDatesPass(timestamps)
 println("Basic validation result: $isValid")
 
-// Method 2: Detailed validation (returns result object)
-val result = InterviewDateValidator.validateBasicInterviewDates(timestamps)
-println("Is valid: ${result.isValid}")
-println("Error message: ${result.errorMessage}")
-println("Error count: ${result.getErrorCount()}")
-
-// Check specific error types
-if (result.hasExpiredError()) {
-    println("Some dates are expired")
-}
-
-if (result.hasRepeatError()) {
-    println("Some dates are duplicated")
-}
+// Method 2: Detailed validation (returns error list)
+val errors = InterviewDateRuleChecker.checkInterviewDatesWithErrors(timestamps)
 
 // Process individual errors
-result.errors.forEachIndexed { index, error ->
+errors.forEachIndexed { index, error ->
     if (error != InterviewDateError.NONE) {
         val timestamp = timestamps[index]
-        val formattedTime = InterviewDateValidator.formatTimestamp(timestamp)
-        val errorDesc = InterviewDateValidator.getErrorDescription(error)
-        println("Error at index $index ($formattedTime): $errorDesc")
+        println("Error at index $index (timestamp: $timestamp): $error")
     }
 }
 ```
@@ -106,29 +93,32 @@ result.errors.forEachIndexed { index, error ->
 #### Collaborative Interview Date Validation
 
 ```kotlin
+import com.m104atsp.foundation.conmunication.date.AvailableTimeSlot
+
 // Create timestamp list
 val timestamps = listOf(1703123456789L)
 
 // Create available time slots
 val availableSlots = listOf(
-    InterviewDateValidator.createTimeSlot(1703120000000L, 1703130000000L),
-    InterviewDateValidator.createTimeSlot(1703140000000L, 1703150000000L)
+    AvailableTimeSlot(1703120000000L, 1703130000000L),
+    AvailableTimeSlot(1703140000000L, 1703150000000L)
 )
 
-// Use predefined duration constants
-val duration = InterviewDateValidator.DurationConstants.THIRTY_MINUTES
+// Duration in milliseconds (30 minutes)
+val duration = 30L * 60 * 1000
 
 // Method 1: Simple validation
-val isValid = InterviewDateValidator.isCollaborativeInterviewDatesValid(
+val isValid = InterviewDateRuleChecker.checkCollaborativeInterviewDatesPass(
     timestamps, availableSlots, duration
 )
 
 // Method 2: Detailed validation
-val result = InterviewDateValidator.validateCollaborativeInterviewDates(
+val errors = InterviewDateRuleChecker.checkCollaborativeInterviewDatesWithErrors(
     timestamps, availableSlots, duration
 )
 
-if (result.hasOutOfRangeError()) {
+// Check for specific errors
+if (errors.contains(InterviewDateError.OUT_OF_RANGE)) {
     println("Some interview times are outside available slots")
 }
 ```
@@ -148,31 +138,17 @@ let timestamps: [Int64] = [
 ]
 
 // Method 1: Simple validation (returns Boolean)
-let isValid = InterviewDateValidator.isBasicInterviewDatesValid(timestampList: timestamps)
+let isValid = InterviewDateRuleChecker.checkInterviewDatesPass(timestampList: timestamps)
 print("Basic validation result: \(isValid)")
 
-// Method 2: Detailed validation (returns result object)
-let result = InterviewDateValidator.validateBasicInterviewDates(timestampList: timestamps)
-print("Is valid: \(result.isValid)")
-print("Error message: \(result.errorMessage)")
-print("Error count: \(result.getErrorCount())")
-
-// Check specific error types
-if result.hasExpiredError() {
-    print("Some dates are expired")
-}
-
-if result.hasRepeatError() {
-    print("Some dates are duplicated")
-}
+// Method 2: Detailed validation (returns error array)
+let errors = InterviewDateRuleChecker.checkInterviewDatesWithErrors(timestampList: timestamps)
 
 // Process individual errors
-for (index, error) in result.errors.enumerated() {
+for (index, error) in errors.enumerated() {
     if error != InterviewDateError.none {
         let timestamp = timestamps[index]
-        let formattedTime = InterviewDateValidator.formatTimestamp(timestampMillis: timestamp)
-        let errorDesc = InterviewDateValidator.getErrorDescription(error: error)
-        print("Error at index \(index) (\(formattedTime)): \(errorDesc)")
+        print("Error at index \(index) (timestamp: \(timestamp)): \(error)")
     }
 }
 ```
@@ -185,210 +161,80 @@ import M104Foundation
 // Create timestamp array
 let timestamps: [Int64] = [1703123456789]
 
-// Create available time slots using helper method
-let availableSlots: [KotlinPair<KotlinLong, KotlinLong>] = [
-    InterviewDateValidator.createTimeSlot(startTimeMillis: 1703120000000, endTimeMillis: 1703130000000),
-    InterviewDateValidator.createTimeSlot(startTimeMillis: 1703140000000, endTimeMillis: 1703150000000)
+// Create available time slots
+let availableSlots = [
+    AvailableTimeSlot(startTime: 1703120000000, endTime: 1703130000000),
+    AvailableTimeSlot(startTime: 1703140000000, endTime: 1703150000000)
 ]
 
-// Use predefined duration constants
-let duration = InterviewDateValidator.DurationConstants.thirtyMinutes
+// Duration in milliseconds (30 minutes)
+let duration: Int64 = 30 * 60 * 1000
 
 // Method 1: Simple validation
-let isValid = InterviewDateValidator.isCollaborativeInterviewDatesValid(
+let isValid = InterviewDateRuleChecker.checkCollaborativeInterviewDatesPass(
     timestampList: timestamps,
-    availableTimeSlots: availableSlots,
-    durationMillis: duration
+    availableTimeList: availableSlots,
+    duration: duration
 )
 
 // Method 2: Detailed validation
-let result = InterviewDateValidator.validateCollaborativeInterviewDates(
+let errors = InterviewDateRuleChecker.checkCollaborativeInterviewDatesWithErrors(
     timestampList: timestamps,
-    availableTimeSlots: availableSlots,
-    durationMillis: duration
+    availableTimeList: availableSlots,
+    duration: duration
 )
 
-if result.hasOutOfRangeError() {
+// Check for specific errors
+if errors.contains(InterviewDateError.outOfRange) {
     print("Some interview times are outside available slots")
 }
 ```
 
-## Working with Duration Constants
+## Working with Available Time Slots
 
 ### Android/Kotlin
 ```kotlin
-// Use predefined duration constants
-val duration15min = InterviewDateValidator.DurationConstants.FIFTEEN_MINUTES
-val duration30min = InterviewDateValidator.DurationConstants.THIRTY_MINUTES
-val duration1hour = InterviewDateValidator.DurationConstants.ONE_HOUR
+// Create time slots directly
+val timeSlot = AvailableTimeSlot(1703120000000L, 1703130000000L)
 
-// Or create custom duration
-val customDuration = 20L * 60 * 1000 // 20 minutes in milliseconds
+// Create from Pair (for backward compatibility)
+val fromPair = AvailableTimeSlot.fromPair(Pair(1703120000000L, 1703130000000L))
+
+// Check if time range is within slot
+val isWithinRange = timeSlot.containsRange(1703121000000L, 1703125000000L)
 ```
 
 ### iOS/Swift
 ```swift
 import M104Foundation
 
-// Use predefined duration constants
-let duration15min = InterviewDateValidator.DurationConstants.fifteenMinutes
-let duration30min = InterviewDateValidator.DurationConstants.thirtyMinutes
-let duration1hour = InterviewDateValidator.DurationConstants.oneHour
+// Create time slots directly
+let timeSlot = AvailableTimeSlot(startTime: 1703120000000, endTime: 1703130000000)
 
-// Or create custom duration
-let customDuration: Int64 = 20 * 60 * 1000 // 20 minutes in milliseconds
+// Check if time range is within slot
+let isWithinRange = timeSlot.containsRange(start: 1703121000000, end: 1703125000000)
 ```
 
-## Utility Functions
+## Error Types
 
-### Android/Kotlin
-```kotlin
-// Get current timestamp
-val currentTime = InterviewDateValidator.getCurrentTimestamp()
-println("Current time: $currentTime")
+The `InterviewDateError` enum provides the following error types:
 
-// Format timestamp to readable string
-val formattedTime = InterviewDateValidator.formatTimestamp(currentTime)
-println("Formatted time: $formattedTime")
-
-// Create time slots
-val slot = InterviewDateValidator.createTimeSlot(
-    currentTime,
-    currentTime + InterviewDateValidator.DurationConstants.ONE_HOUR
-)
-```
-
-### iOS/Swift
-```swift
-import M104Foundation
-
-// Get current timestamp
-let currentTime = InterviewDateValidator.getCurrentTimestamp()
-print("Current time: \(currentTime)")
-
-// Format timestamp to readable string
-let formattedTime = InterviewDateValidator.formatTimestamp(timestampMillis: currentTime)
-print("Formatted time: \(formattedTime)")
-
-// Create time slots
-let slot = InterviewDateValidator.createTimeSlot(
-    startTimeMillis: currentTime,
-    endTimeMillis: currentTime + InterviewDateValidator.DurationConstants.oneHour
-)
-```
-
-## Error Handling
-
-### Android/Kotlin
-```kotlin
-val result = InterviewDateValidator.validateBasicInterviewDates(timestamps)
-
-// Check different error types
-when (result.getFirstError()) {
-    InterviewDateError.NONE -> println("All interviews are valid")
-    InterviewDateError.MUST -> println("At least one interview time is required")
-    InterviewDateError.DATE_EXPIRED -> println("Some interview times are in the past")
-    InterviewDateError.INTERVIEW_DATE_REPEAT -> println("Some interview times are duplicated")
-    InterviewDateError.OUT_OF_RANGE -> println("Some interview times are outside available slots")
-}
-
-// Get all error descriptions
-val errorDescriptions = result.getAllErrorDescriptions()
-println("All errors: $errorDescriptions")
-```
-
-### iOS/Swift
-```swift
-import M104Foundation
-
-let result = InterviewDateValidator.validateBasicInterviewDates(timestampList: timestamps)
-
-// Check different error types
-switch result.getFirstError() {
-case .none:
-    print("All interviews are valid")
-case .must:
-    print("At least one interview time is required")
-case .dateExpired:
-    print("Some interview times are in the past")
-case .interviewDateRepeat:
-    print("Some interview times are duplicated")
-case .outOfRange:
-    print("Some interview times are outside available slots")
-default:
-    print("Unknown error")
-}
-
-// Get all error descriptions
-let errorDescriptions = result.getAllErrorDescriptions()
-print("All errors: \(errorDescriptions)")
-```
-
-## Direct Usage of Core API
-
-You can also use the core `InterviewDateRuleChecker` directly if you prefer lower-level access:
-
-### Android/Kotlin
-```kotlin
-val timestamps = listOf(1703123456789L, 1703127056789L)
-
-// Direct validation
-val isValid = InterviewDateRuleChecker.checkInterviewDatesPass(timestamps)
-val errors = InterviewDateRuleChecker.checkInterviewDatesWithErrors(timestamps)
-
-// Process errors
-errors.forEach { error ->
-    println("Error: $error")
-}
-```
-
-### iOS/Swift
-```swift
-import M104Foundation
-
-let timestamps: [Int64] = [1703123456789, 1703127056789]
-
-// Direct validation
-let isValid = InterviewDateRuleChecker.checkInterviewDatesPass(timestampList: timestamps)
-let errors = InterviewDateRuleChecker.checkInterviewDatesWithErrors(timestampList: timestamps)
-
-// Process errors
-for error in errors {
-    print("Error: \(error)")
-}
-```
-
-## Platform-Specific Notes
-
-### For Android/Kotlin Developers
-1. **Type Safety**: All APIs use standard Kotlin types (`List<Long>`, `Boolean`, etc.)
-2. **Null Safety**: All APIs are null-safe and don't return nullables
-3. **Collections**: Use standard Kotlin collections (`listOf`, `mutableListOf`)
-4. **Integration**: Import directly from the AAR package
-
-### For iOS/Swift Developers
-1. **Type Mapping**: Kotlin `Long` maps to Swift `Int64`
-2. **Collections**: Kotlin `List` maps to Swift `Array`
-3. **Pairs**: Kotlin `Pair<Long, Long>` maps to `KotlinPair<KotlinLong, KotlinLong>` in Swift
-4. **Enums**: Kotlin enum values are accessible with lowercase names in Swift (e.g., `InterviewDateError.none`)
-5. **Object Methods**: Kotlin object methods are accessible as static methods in Swift
-6. **Null Safety**: All APIs are designed to be null-safe and don't return optionals
+- `NONE`: No error
+- `MUST`: Required field error (empty list)
+- `DATE_EXPIRED`: Interview time is in the past
+- `INTERVIEW_DATE_REPEAT`: Duplicate interview times
+- `OUT_OF_RANGE`: Interview time is outside available slots (collaborative validation only)
 
 ## Best Practices
 
-### General
-1. Use `InterviewDateValidator` for the unified cross-platform API
-2. Use duration constants instead of calculating milliseconds manually
-3. Always check the validation result before processing timestamps
-4. Use the utility functions for formatting and time manipulation
-5. Handle different error types appropriately in your UI
+1. **Always validate input**: Use the validation methods before processing interview dates
+2. **Handle errors gracefully**: Check for specific error types and provide appropriate user feedback
+3. **Use appropriate validation**: Use basic validation for simple scenarios, collaborative validation when time slots are involved
+4. **Time precision**: Remember that duplicate checking is done at minute precision level
 
-### Android Specific
-1. Use the `InterviewDateValidationResult` class for comprehensive error handling
-2. Leverage Kotlin's `when` expressions for clean error type handling
-3. Use the helper methods like `hasExpiredError()` for quick checks
+## Notes
 
-### iOS Specific
-1. Use the helper method `createTimeSlot()` instead of creating Pairs directly
-2. Access duration constants through the nested object structure
-3. Use Swift's `switch` statements with the enum cases for error handling
+- All timestamps are in milliseconds (Unix timestamp format)
+- Time validation is performed against system current time
+- Duplicate detection ignores seconds and milliseconds (minute precision)
+- Available time slots must completely contain the interview duration

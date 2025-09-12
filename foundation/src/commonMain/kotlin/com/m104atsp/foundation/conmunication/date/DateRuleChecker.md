@@ -200,26 +200,21 @@ val errors = InterviewDateRuleChecker.checkCollaborativeInterviewDatesWithErrors
 
 ## 外部 API 設計
 
-本項目提供兩層 API 設計：
+本項目提供核心驗證器設計：
 
-### 1. 核心驗證器 - InterviewDateRuleChecker
+### 核心驗證器 - InterviewDateRuleChecker
 - 低層級的驗證邏輯實現
 - 直接的驗證方法，返回錯誤列表
 - 適合需要細粒度控制的場景
+- 提供基本驗證和協作面試驗證功能
 
-### 2. 統一驗證器 - InterviewDateValidator  
-- 高層級的統一 API，同時支援 Android AAR 和 iOS XCFramework
-- 封裝的驗證結果類型 (`InterviewDateValidationResult`)
-- 豐富的便利方法和工具函數
-- 完整的 @ObjCName 註解確保良好的 Swift 體驗
-- 詳細的 KDoc 註解支援 Android AAR 的 IDE 提示
-
-**建議**：優先使用 `InterviewDateValidator` 作為外部 API，它提供更完整和友好的開發體驗。
+**使用建議**：直接使用 `InterviewDateRuleChecker` 進行面試時間驗證，它提供完整的驗證邏輯和靈活的錯誤處理。
 
 ## 依賴
 
 - `kotlinx.datetime` - 用於跨平台時間處理
 - `InterviewDateError` - 錯誤狀態枚舉類
+- `AvailableTimeSlot` - 可用時間段物件
 
 ## 版本資訊
 
