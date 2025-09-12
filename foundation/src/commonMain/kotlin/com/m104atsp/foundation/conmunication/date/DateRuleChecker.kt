@@ -4,6 +4,73 @@ import kotlinx.datetime.*
 
 object DateRuleChecker {
 
+    fun checkCollaborativeInterviewDatesPass(timestampList: MutableList<Long>, availableTimeList: List<Pair<Long, Long>>, duration: Long): Boolean{
+        val errorList = checkCollaborativeInterviewDatesViewErrors(timestampList, availableTimeList, duration)
+        return errorList.all { it == InterviewDateError.NONE }
+    }
+
+    /**
+     * 檢查面試時間清單的錯誤狀態
+     *
+     * @param timestampList 面試時間戳清單 (毫秒)
+     * @param availableTimeSlots 可用時段清單
+     * @param duration 面試持續時間 (毫秒)
+     * @return 對應每個時間戳的錯誤狀態清單
+     *
+     * 驗證優先順序: 必填 -> 過期 -> 重複(精確到分鐘) -> 有沒有落在區間內
+     * - 空清單: 回傳必填錯誤
+     * - 過期時間: 標記為過期錯誤
+     * - 重複時間: 標記為重複錯誤 (會覆蓋過期錯誤)
+     * - 重複比較精確到分鐘，忽略秒和毫秒
+     * - 檢查面試時間是否落在可用區間內
+     */
+    fun checkCollaborativeInterviewDatesViewErrors(timestampList: MutableList<Long>, availableTimeList: List<Pair<Long, Long>>, duration: Long): MutableList<InterviewDateError> {
+        // 空清單檢查
+        if (timestampList.isEmpty()) return mutableListOf(InterviewDateError.MUST)
+
+        //取得系統時間毫秒
+        val currentTime = Clock.System.now().toEpochMilliseconds()
+
+        // 1. 初始檢查: 過期狀態
+        val errorList = timestampList.map { timestamp ->
+            when {
+                timestamp < currentTime -> InterviewDateError.DATE_EXPIRED
+                else -> InterviewDateError.NONE
+            }
+        }.toMutableList()
+
+        // 2. 檢查重複: 將時間戳轉為分鐘精度
+        val minuteTimestamps = timestampList.map { it.toMinutePrecision() }
+        val duplicates = findDuplicateIndices(minuteTimestamps)
+
+        // 3. 標記重複錯誤 (不覆蓋已有錯誤)
+        duplicates.forEach { index ->
+            if (errorList[index] ==  InterviewDateError.NONE) {
+                errorList[index] = InterviewDateError.INTERVIEW_DATE_REPEAT
+            }
+        }
+        // 4. 檢查是否落在可用區間內 timestampList + duration 有沒有超過 availableTimeSlots 的區間
+        // 有的話回傳錯誤AtsEditErrorType.InterviewDateOutOfRange
+        timestampList.forEachIndexed { index, timestamp ->
+            if (errorList[index] == InterviewDateError.NONE) {
+                val interviewEndTime = timestamp + duration
+                val isWithinAvailableSlots = availableTimeList.any { slot ->
+                    timestamp >= slot.first && interviewEndTime <= slot.first
+                }
+                if (!isWithinAvailableSlots) {
+                    errorList[index] = InterviewDateError.OUT_OF_RANGE
+                }
+            }
+        }
+
+        return errorList
+    }
+
+    fun checkInterviewDatesPass(timestampList: MutableList<Long>): Boolean {
+        val errorList = checkInterviewDatesViewErrors(timestampList)
+        return errorList.all { it == InterviewDateError.NONE }
+    }
+
     /**
      * 檢查面試時間清單的錯誤狀態
      *
@@ -16,15 +83,15 @@ object DateRuleChecker {
      * - 重複時間: 標記為重複錯誤 (會覆蓋過期錯誤)
      * - 重複比較精確到分鐘，忽略秒和毫秒
      */
-    fun checkDates(list: MutableList<Long>): MutableList<InterviewDateError> {
+    fun checkInterviewDatesViewErrors(timestampList: MutableList<Long>): MutableList<InterviewDateError> {
         // 空清單檢查
-        if (list.isEmpty()) return mutableListOf(InterviewDateError.MUST)
+        if (timestampList.isEmpty()) return mutableListOf(InterviewDateError.MUST)
 
         //取得系統時間毫秒
         val currentTime = Clock.System.now().toEpochMilliseconds()
 
         // 1. 初始檢查: 過期狀態
-        val errorList = list.map { timestamp ->
+        val errorList = timestampList.map { timestamp ->
             when {
                 timestamp < currentTime -> InterviewDateError.DATE_EXPIRED
                 else -> InterviewDateError.NONE
@@ -32,7 +99,7 @@ object DateRuleChecker {
         }.toMutableList()
 
         // 2. 檢查重複: 將時間戳轉為分鐘精度
-        val minuteTimestamps = list.map { it.toMinutePrecision() }
+        val minuteTimestamps = timestampList.map { it.toMinutePrecision() }
         val duplicates = findDuplicateIndices(minuteTimestamps)
 
         // 3. 標記重複錯誤 (不覆蓋已有錯誤)

@@ -4,5 +4,6 @@ enum class InterviewDateError {
     NONE,
     MUST,
     DATE_EXPIRED,
-    INTERVIEW_DATE_REPEAT
+    INTERVIEW_DATE_REPEAT,
+    OUT_OF_RANGE;
 }

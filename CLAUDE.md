@@ -51,6 +51,9 @@ This is a **Kotlin Multiplatform** project named **M104SharedLogic** that focuse
 ./gradlew :foundation:linkDebugFrameworkIosSimulatorArm64
 ./gradlew :foundation:linkReleaseFrameworkIosSimulatorArm64
 
+# Build XCFramework (includes both device and simulator)
+./gradlew :foundation:assembleM104FoundationXCFramework
+
 # Clean build
 ./gradlew clean
 
@@ -124,11 +127,14 @@ The foundation module builds to a static iOS framework named "M104Foundation":
 
 #### Date Validation System
 - **`DateRuleChecker`**: Comprehensive interview date validation
+  - `checkInterviewDatesViewErrors()`: Basic interview date validation
+  - `checkCollaborativeInterviewDatesViewErrors()`: Advanced validation with time slot range checking
   - Empty list validation (required field check)
   - Expiration validation against system time using kotlinx-datetime
   - Duplicate detection with minute-level precision
-  - Prioritized error handling (required → expired → duplicate)
-- **`InterviewDateError`**: Error states enum (`NONE`, `MUST`, `DATE_EXPIRED`, `INTERVIEW_DATE_REPEAT`)
+  - Time slot range validation for collaborative interviews
+  - Prioritized error handling (required → expired → duplicate → out of range)
+- **`InterviewDateError`**: Error states enum (`NONE`, `MUST`, `DATE_EXPIRED`, `INTERVIEW_DATE_REPEAT`, `OUT_OF_RANGE`)
 
 ### Example Business Logic Areas
 - Date/time validation and business rules
